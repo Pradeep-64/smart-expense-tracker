@@ -1,0 +1,22 @@
+body {
+    background: #f6f8fb;
+}
+
+.card {
+    border: none;
+    border-radius: 1rem;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04);
+}
+
+.stat-card h6 {
+    color: #6c757d;
+    margin-bottom: 0.25rem;
+}
+
+.navbar-brand {
+    letter-spacing: 0.2px;
+}
+
+table th {
+    white-space: nowrap;
+}
