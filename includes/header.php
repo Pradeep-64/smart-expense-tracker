@@ -1,8 +1,6 @@
 <?php
 declare(strict_types=1);
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
+require_once __DIR__ . "/auth.php";
 $currentPage = basename($_SERVER["PHP_SELF"]);
 ?>
 <!DOCTYPE html>
@@ -35,6 +33,7 @@ $currentPage = basename($_SERVER["PHP_SELF"]);
                 <?php else: ?>
                     <li class="nav-item"><a class="nav-link" href="login.php">Login</a></li>
                     <li class="nav-item"><a class="nav-link" href="register.php">Register</a></li>
+                    <li class="nav-item"><a class="nav-link text-info" href="admin/login.php">Admin</a></li>
                 <?php endif; ?>
             </ul>
         </div>

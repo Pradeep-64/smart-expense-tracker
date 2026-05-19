@@ -1,26 +1,68 @@
-# ER Diagram Explanation
+# Entity Relationship Diagram
 
-## Entities
+## Tables
 
-- `users`: stores registered user details and login credentials.
-- `categories`: master list of expense categories.
-- `income`: all income records for each user.
-- `expenses`: all expense records tagged with category and payment method.
-- `budgets`: monthly budget allocation by user and category.
-- `budget_alerts`: auto-generated warnings when category spend exceeds monthly budget.
+- **users** — registered users (`is_blocked` for admin control)
+- **admin** — administrators (separate auth)
+- **categories** — expense categories (normalized lookup)
+- **income** — user income records
+- **expenses** — user expenses (FK → users, categories)
+- **budgets** — per-user monthly category budgets
+- **budget_alerts** — overspending history
+- **notifications** — user alerts (trigger-generated)
+- **activity_logs** — audit trail (trigger-generated)
+- **monthly_totals** — denormalized cache (trigger-updated)
 
 ## Relationships
 
-- One `user` -> many `income` entries (`users.id` -> `income.user_id`).
-- One `user` -> many `expenses` entries (`users.id` -> `expenses.user_id`).
-- One `category` -> many `expenses` entries (`categories.id` -> `expenses.category_id`).
-- One `user` + one `category` + one `month` -> one `budget` row (unique composite key in `budgets`).
-- One `budget` can produce many `budget_alerts` when overspending happens.
+```text
+users 1───* income
+users 1───* expenses
+users 1───* budgets
+users 1───* notifications
+users 1───* activity_logs
+users 1───* monthly_totals
+categories 1───* expenses
+categories 1───* budgets
+```
 
-## DBMS Concepts Used
+## SQL Objects
 
-- Primary keys in all tables.
-- Foreign keys with referential integrity.
-- `JOIN`, `GROUP BY`, and aggregate functions (`SUM`, `COALESCE`) across dashboards and reports.
-- Stored procedure `GetMonthlySummary` for reusable monthly aggregate.
-- Trigger `trg_budget_alert_after_expense` for budget warning automation.
+| Type | Name |
+|------|------|
+| View | monthly_expense_summary |
+| View | category_wise_expenses |
+| View | user_financial_summary |
+| View | top_spending_users |
+| Procedure | GetMonthlySummary |
+| Procedure | sp_generate_monthly_report |
+| Procedure | sp_calculate_total_savings |
+| Procedure | sp_category_analysis |
+| Procedure | sp_detect_overspending |
+| Trigger | trg_budget_alert_after_expense |
+| Trigger | trg_expense_activity_log |
+| Trigger | trg_income_activity_log |
+| Trigger | trg_update_monthly_totals_expense |
+| Trigger | trg_update_monthly_totals_income |
+
+## Mermaid ER
+
+```mermaid
+erDiagram
+    users ||--o{ income : has
+    users ||--o{ expenses : has
+    users ||--o{ budgets : sets
+    users ||--o{ notifications : receives
+    users ||--o{ activity_logs : generates
+    categories ||--o{ expenses : classifies
+    categories ||--o{ budgets : limits
+    admin {
+        int admin_id PK
+        string admin_email UK
+    }
+    users {
+        int id PK
+        string email UK
+        tinyint is_blocked
+    }
+```

@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 $host = "localhost";
 $username = "root";
-$password = "";
+$password = ""; // XAMPP default is empty; use "root" if your MySQL requires it
 $database = "smart_expense_tracker";
 
 $conn = new mysqli($host, $username, $password, $database);
